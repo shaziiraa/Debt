@@ -1,135 +1,246 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Debt Snowball Dashboard</title>
-    <!-- Tailwind CSS -->
+    <title>Executive Financial Roadmap</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Canvas Confetti untuk animasi -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
-        body { font-family: 'Inter', sans-serif; background-color: #0f172a; color: #f8fafc; }
-        .glass-card { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); }
-        .checkbox-custom:checked + div { background-color: #10b981; border-color: #10b981; }
-        .checkbox-custom:checked + div svg { display: block; }
-        .cbr-locked { filter: grayscale(100%) blur(2px); opacity: 0.5; transition: all 1s ease; }
-        .cbr-unlocked { filter: grayscale(0%) blur(0px); opacity: 1; transform: scale(1.05); transition: all 1s ease; box-shadow: 0 0 20px rgba(16, 185, 129, 0.5); }
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #020617; color: #f8fafc; }
+        .glass-panel { background: rgba(30, 41, 59, 0.4); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.05); }
+        .mission-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .mission-card:hover { transform: translateY(-2px); box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.1); border-color: rgba(16, 185, 129, 0.3); }
+        .checkbox-custom:checked + div { background-color: #10b981; border-color: #10b981; box-shadow: 0 0 15px rgba(16, 185, 129, 0.4); }
+        .checkbox-custom:checked + div svg { display: block; stroke-dasharray: 16; stroke-dashoffset: 0; animation: draw 0.4s ease-in-out forwards; }
+        @keyframes draw { from { stroke-dashoffset: 16; } to { stroke-dashoffset: 0; } }
+        .reward-locked { filter: grayscale(100%) blur(4px); opacity: 0.3; transition: all 1.5s ease; }
+        .reward-unlocked { filter: grayscale(0%) blur(0px); opacity: 1; transform: scale(1.05); transition: all 1.5s ease; box-shadow: 0 0 40px rgba(16, 185, 129, 0.2); }
+        .gradient-text { background: linear-gradient(to right, #60a5fa, #34d399); -webkit-background-clip: text; color: transparent; }
     </style>
 </head>
-<body class="min-h-screen p-4 md:p-8">
+<body class="min-h-screen p-4 md:p-8 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]">
 
-    <div class="max-w-4xl mx-auto space-y-6">
+    <div class="max-w-5xl mx-auto space-y-8">
         
-        <!-- Header -->
-        <header class="text-center space-y-2">
-            <h1 class="text-3xl md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-emerald-400">
-                Master Plan Pelunasan
+        <!-- Header Section -->
+        <header class="text-center space-y-3 mt-4 mb-10">
+            <div class="inline-block px-4 py-1.5 rounded-full glass-panel text-xs font-semibold tracking-wider text-emerald-400 mb-2 border-emerald-500/20">
+                <i class="fas fa-shield-alt mr-2"></i>TACTICAL DEBT CLEARANCE
+            </div>
+            <h1 class="text-3xl md:text-5xl font-extrabold tracking-tight gradient-text">
+                Executive Master Plan
             </h1>
-            <p class="text-slate-400">Roadmap Menuju Bebas Finansial & CBR250RR (Mei 2027)</p>
+            <p class="text-slate-400 max-w-2xl mx-auto text-sm md:text-base leading-relaxed">
+                Roadmap definitif menuju bebas utang, pencairan dana Ibu (Rp3 Juta), dan akuisisi Honda CBR250RR (Tahun 2027).
+            </p>
         </header>
 
-        <!-- Progress Section -->
-        <div class="glass-card rounded-2xl p-6 shadow-xl">
-            <div class="flex justify-between items-end mb-2">
+        <!-- Stats Dashboard -->
+        <div class="glass-panel rounded-3xl p-6 md:p-8 shadow-2xl relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 via-emerald-400 to-teal-500"></div>
+            
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-6">
                 <div>
-                    <p class="text-sm text-slate-400">Total Progres Akun Lunas</p>
-                    <h2 class="text-2xl font-bold"><span id="lunasCount">0</span> / 9 Akun</h2>
+                    <p class="text-xs text-slate-400 uppercase tracking-wider font-semibold">Status Misi</p>
+                    <h2 class="text-3xl font-bold mt-1"><span id="lunasCount" class="text-white">0</span> <span class="text-lg text-slate-500 font-normal">/ 8</span></h2>
                 </div>
-                <div class="text-right">
-                    <p class="text-sm text-slate-400">Persentase</p>
-                    <h2 class="text-2xl font-bold text-emerald-400" id="progressPercent">0%</h2>
+                <div>
+                    <p class="text-xs text-slate-400 uppercase tracking-wider font-semibold">Progres Keseluruhan</p>
+                    <h2 class="text-3xl font-bold mt-1 text-emerald-400" id="progressPercent">0%</h2>
+                </div>
+                <div class="col-span-2 hidden md:block text-right">
+                    <p class="text-xs text-slate-400 uppercase tracking-wider font-semibold">Sistem Penyimpanan</p>
+                    <p class="text-sm text-blue-400 mt-2 flex items-center justify-end"><i class="fas fa-cloud-check mr-2"></i> Auto-Sync LocalStorage Aktif</p>
                 </div>
             </div>
-            <!-- Progress Bar -->
-            <div class="w-full bg-slate-700 rounded-full h-4 overflow-hidden relative">
-                <div id="progressBar" class="bg-gradient-to-r from-blue-500 to-emerald-500 h-4 rounded-full transition-all duration-700 w-0"></div>
+
+            <!-- Enhanced Progress Bar -->
+            <div class="w-full bg-slate-800/50 rounded-full h-3 overflow-hidden p-0.5 border border-slate-700">
+                <div id="progressBar" class="bg-gradient-to-r from-blue-500 to-emerald-400 h-full rounded-full transition-all duration-1000 ease-out w-0 relative">
+                    <div class="absolute top-0 right-0 bottom-0 left-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-20"></div>
+                </div>
             </div>
+        </div>
+
+        <!-- Section Title -->
+        <div class="flex items-center gap-4 mt-12 mb-6">
+            <h3 class="text-xl font-bold text-white"><i class="fas fa-tasks text-blue-400 mr-3"></i>Timeline Eksekusi</h3>
+            <div class="h-px bg-slate-700 flex-1"></div>
         </div>
 
         <!-- Timeline Grid -->
-        <div id="timelineContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <!-- Cards will be injected here via JS -->
+        <div id="timelineContainer" class="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <!-- JavaScript will inject cards here -->
         </div>
 
-        <!-- Reward Section -->
-        <div class="glass-card rounded-2xl p-6 shadow-xl text-center mt-8 overflow-hidden relative">
-            <h3 class="text-xl font-bold mb-4">Ultimate Reward: Honda CBR250RR</h3>
-            <p id="rewardText" class="text-sm text-slate-400 mb-4">Selesaikan 9 misi pelunasan di atas untuk membuka akses menabung unit ini.</p>
-            <div class="relative max-w-sm mx-auto">
-                <div id="cbrImage" class="cbr-locked bg-slate-800 rounded-xl p-4 border border-slate-700">
-                    <p class="text-6xl py-8">🏍️</p>
-                    <p class="font-bold text-slate-300">Target Cash: Rp35.000.000</p>
+        <!-- Ultimate Reward Section -->
+        <div class="glass-panel rounded-3xl p-8 shadow-2xl text-center mt-12 mb-20 overflow-hidden relative border-t border-slate-700">
+            <div class="absolute -top-24 -left-24 w-48 h-48 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl opacity-10"></div>
+            <div class="absolute -bottom-24 -right-24 w-48 h-48 bg-emerald-500 rounded-full mix-blend-multiply filter blur-3xl opacity-10"></div>
+            
+            <h3 class="text-2xl font-extrabold mb-2 text-white">Target Akhir: Honda CBR250RR</h3>
+            <p id="rewardText" class="text-sm text-slate-400 mb-8 max-w-md mx-auto">Selesaikan 8 misi di atas. Disiplin adalah jembatan antara tujuan dan pencapaian.</p>
+            
+            <div class="relative max-w-md mx-auto">
+                <div id="cbrImage" class="reward-locked bg-gradient-to-b from-slate-800 to-slate-900 rounded-2xl p-8 border border-slate-700 shadow-inner">
+                    <i class="fas fa-motorcycle text-7xl text-slate-300 mb-4 drop-shadow-lg"></i>
+                    <p class="font-bold text-slate-200 text-lg">Target Tabungan: Rp35.000.000</p>
+                    <p class="text-xs text-slate-500 mt-2">Cash Keras. Tanpa Leasing.</p>
                 </div>
-                <div id="lockOverlay" class="absolute inset-0 flex items-center justify-center">
-                    <span class="text-4xl bg-slate-900 rounded-full p-3 shadow-lg">🔒</span>
+                <div id="lockOverlay" class="absolute inset-0 flex items-center justify-center backdrop-blur-sm rounded-2xl">
+                    <div class="bg-slate-900/90 p-4 rounded-full border border-slate-700 shadow-2xl">
+                        <i class="fas fa-lock text-3xl text-slate-400"></i>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        const debts = [
-            { id: 1, name: "ShopeePinjam 2", date: "Oktober 2026", amount: "Rp 696.000" },
-            { id: 2, name: "ShopeePinjam 1", date: "November 2026", amount: "Rp 879.000" },
-            { id: 3, name: "SeaBank Zulfa 1", date: "Desember 2026", amount: "Rp 1.568.000" },
-            { id: 4, name: "ShopeePinjam 3", date: "Januari 2027", amount: "Sisa Saldo" },
-            { id: 5, name: "Adapundi", date: "Februari 2027", amount: "Sisa Saldo" },
-            { id: 6, name: "SeaBank Zulfa 2", date: "Februari 2027", amount: "Sisa Saldo" },
-            { id: 7, name: "Jago Zulfa 1", date: "Februari 2027", amount: "Sisa Saldo" },
-            { id: 8, name: "Jago Zulfa 2", date: "Mei 2027", amount: "Rp 6.331.485" },
-            { id: 9, name: "Jago Zulfa 3", date: "Mei 2027", amount: "Rp 2.831.485" }
+        // Data Struktur Misi Lengkap dengan Instruksi Aksi
+        const missions = [
+            { 
+                id: 1, 
+                title: "Amankan Tengah Bulan", 
+                date: "6 Okt 2026", 
+                amount: "Rp 1.567.345",
+                desc: "Eksekusi komisi Selasa. Lunasi tagihan Jago 2, SeaBank 2, dan Jago 3 bulan ini.", 
+                action: "Centang SETELAH Anda mentransfer dana dari komisi Selasa besok.",
+                icon: "fa-bolt"
+            },
+            { 
+                id: 2, 
+                title: "Kematian SPinjam 2", 
+                date: "28 Okt 2026", 
+                amount: "Rp 696.000",
+                desc: "Gaji + Uang Jumat masuk. Bayar semua tagihan rutin Nov & Lunasi total SPinjam 2.", 
+                action: "Centang TEPAT PADA 28 Oktober setelah akun SPinjam 2 ditutup.",
+                icon: "fa-skull-crossbones"
+            },
+            { 
+                id: 3, 
+                title: "Kematian SPinjam 1", 
+                date: "28 Nov 2026", 
+                amount: "Rp 879.000",
+                desc: "Snowball efek berjalan. Tembak mati SPinjam 1 tanpa mengganggu tabungan Ibu.", 
+                action: "Centang pada 28 November setelah sisa pokok SPinjam 1 lunas 100%.",
+                icon: "fa-skull"
+            },
+            { 
+                id: 4, 
+                title: "Persembahan untuk Ibu", 
+                date: "Desember 2026", 
+                amount: "Rp 3.000.000",
+                desc: "Hasil tabungan sisa kas dan uang Jumat diserahkan tunai kepada Ibu.", 
+                action: "Centang DI HARI Anda secara fisik/transfer menyerahkan uang ini ke Ibu.",
+                icon: "fa-heart",
+                special: true
+            },
+            { 
+                id: 5, 
+                title: "Bebas Defisit Akhir Tahun", 
+                date: "28 Des 2026", 
+                amount: "Surplus Rp 278.904",
+                desc: "Bayar tagihan Januari. Kas tetap positif meskipun sudah memberi Ibu Rp3 Juta.", 
+                action: "Centang setelah semua tagihan Januari sukses terbayar di akhir tahun.",
+                icon: "fa-glass-cheers"
+            },
+            { 
+                id: 6, 
+                title: "Kehancuran SeaBank 1 & SPinjam 3", 
+                date: "Januari 2027", 
+                amount: "Sisa Saldo Berjalan",
+                desc: "Arus kas gajian + uang Jumat melibas 2 akun besar ini secara langsung.", 
+                action: "Centang saat Anda melihat notifikasi lunas dari SeaBank dan Shopee.",
+                icon: "fa-fire"
+            },
+            { 
+                id: 7, 
+                title: "Sapu Bersih Pinjol", 
+                date: "Februari 2027", 
+                amount: "Sisa Saldo Berjalan",
+                desc: "Adapundi, SeaBank 2, dan Jago 1 musnah tak tersisa.", 
+                action: "Centang saat Anda resmi tidak memiliki aplikasi pinjol aktif lagi.",
+                icon: "fa-broom"
+            },
+            { 
+                id: 8, 
+                title: "Kemerdekaan Finansial", 
+                date: "Maret - Mei 2027", 
+                amount: "Utang Rp 0",
+                desc: "Jago 2 dan Jago 3 lunas. 100% Gaji & Uang Jumat murni milik Anda.", 
+                action: "Centang saat Anda telah merdeka sepenuhnya dari segala utang masa lalu.",
+                icon: "fa-flag-checkered"
+            }
         ];
 
         const container = document.getElementById('timelineContainer');
         
-        // Render Cards & Load LocalStorage
-        debts.forEach((debt, index) => {
-            const isChecked = localStorage.getItem(`debt_${debt.id}`) === 'true';
+        // Render Kartu Misi
+        missions.forEach((mission, index) => {
+            const isChecked = localStorage.getItem(`pro_mission_${mission.id}`) === 'true';
+            const specialClass = mission.special ? 'border-pink-500/30 bg-pink-500/5' : 'border-white/5';
+            const textHighlight = mission.special ? 'text-pink-400' : 'text-blue-400';
 
             const card = document.createElement('div');
-            card.className = "glass-card p-5 rounded-xl flex items-start gap-4 transition-all hover:bg-slate-800 cursor-pointer";
-            card.setAttribute('onclick', `toggleDebt(${debt.id})`);
+            card.className = `glass-panel mission-card p-6 rounded-2xl flex items-start gap-5 cursor-pointer relative overflow-hidden ${specialClass}`;
+            card.setAttribute('onclick', `toggleMission(${mission.id})`);
             
             card.innerHTML = `
-                <div class="pt-1">
+                <div class="pt-1 z-10">
                     <label class="relative flex items-center cursor-pointer">
-                        <input type="checkbox" id="checkbox-${debt.id}" class="checkbox-custom sr-only" ${isChecked ? 'checked' : ''} onclick="event.stopPropagation(); toggleDebt(${debt.id})">
-                        <div class="w-6 h-6 border-2 border-slate-500 rounded flex items-center justify-center transition-colors ${isChecked ? 'bg-emerald-500 border-emerald-500' : ''}">
+                        <input type="checkbox" id="check-${mission.id}" class="checkbox-custom sr-only" ${isChecked ? 'checked' : ''} onclick="event.stopPropagation(); toggleMission(${mission.id})">
+                        <div class="w-7 h-7 border-2 border-slate-600 rounded-lg flex items-center justify-center transition-all duration-300 ${isChecked ? 'bg-emerald-500 border-emerald-500' : 'bg-slate-800/50'}">
                             <svg class="w-4 h-4 text-white ${isChecked ? 'block' : 'hidden'}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
                             </svg>
                         </div>
                     </label>
                 </div>
-                <div class="flex-1 pointer-events-none">
-                    <div class="flex justify-between items-center">
-                        <span class="text-xs font-bold text-blue-400 bg-blue-400/10 px-2 py-1 rounded">${debt.date}</span>
-                        <span class="text-xs text-slate-500">Misi ${index + 1}</span>
+                <div class="flex-1 pointer-events-none z-10">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-[10px] uppercase font-bold tracking-wider ${textHighlight} bg-slate-900/50 px-2.5 py-1 rounded-md border border-slate-700/50">
+                            <i class="fas ${mission.icon} mr-1.5"></i>${mission.date}
+                        </span>
+                        <span class="text-[10px] text-slate-500 font-bold tracking-widest uppercase">Misi 0${index + 1}</span>
                     </div>
-                    <h3 class="font-bold text-lg mt-2">${debt.name}</h3>
-                    <p class="text-sm text-slate-400 mt-1">${debt.amount}</p>
+                    <h3 class="font-bold text-lg text-white leading-tight">${mission.title}</h3>
+                    <p class="text-[13px] font-semibold text-emerald-400/90 mt-1 mb-2">${mission.amount}</p>
+                    <p class="text-[13px] text-slate-400 leading-relaxed mb-3">${mission.desc}</p>
+                    <div class="bg-slate-900/60 p-3 rounded-lg border border-slate-700/50">
+                        <p class="text-[11px] text-slate-300 flex items-start gap-2">
+                            <i class="fas fa-info-circle text-blue-400 mt-0.5"></i>
+                            <span><strong class="text-white">Aksi:</strong> ${mission.action}</span>
+                        </p>
+                    </div>
                 </div>
             `;
             container.appendChild(card);
         });
 
+        // Initialize state
         updateProgress(false);
 
-        function toggleDebt(id) {
-            const checkbox = document.getElementById(`checkbox-${id}`);
+        function toggleMission(id) {
+            const checkbox = document.getElementById(`check-${id}`);
             checkbox.checked = !checkbox.checked;
             
-            localStorage.setItem(`debt_${id}`, checkbox.checked);
+            // Simpan status ke LocalStorage
+            localStorage.setItem(`pro_mission_${id}`, checkbox.checked);
             
+            // Animasi UI Kotak Centang
             const boxDiv = checkbox.nextElementSibling;
             const svgIcon = boxDiv.querySelector('svg');
             if (checkbox.checked) {
                 boxDiv.classList.add('bg-emerald-500', 'border-emerald-500');
+                boxDiv.classList.remove('bg-slate-800/50', 'border-slate-600');
                 svgIcon.classList.remove('hidden');
             } else {
                 boxDiv.classList.remove('bg-emerald-500', 'border-emerald-500');
+                boxDiv.classList.add('bg-slate-800/50', 'border-slate-600');
                 svgIcon.classList.add('hidden');
             }
 
@@ -139,50 +250,273 @@
         function updateProgress(isInteractive = false) {
             const checkboxes = document.querySelectorAll('.checkbox-custom');
             const checkedCount = Array.from(checkboxes).filter(cb => cb.checked).length;
-            const total = debts.length;
+            const total = missions.length;
             const percentage = Math.round((checkedCount / total) * 100);
 
+            // Update DOM
             document.getElementById('lunasCount').innerText = checkedCount;
-            document.getElementById('progressPercent').innerText = `${percentage}%`;
+            
+            // Animasi Counter Persentase
+            const percentEl = document.getElementById('progressPercent');
+            percentEl.innerText = `${percentage}%`;
+            if(percentage === 100) { percentEl.classList.add('text-emerald-400'); }
+            
             document.getElementById('progressBar').style.width = `${percentage}%`;
 
             if (checkedCount === total && isInteractive) {
                 triggerVictory();
             } else if (checkedCount === total) {
-                const cbrImage = document.getElementById('cbrImage');
-                const lockOverlay = document.getElementById('lockOverlay');
-                cbrImage.classList.remove('cbr-locked');
-                cbrImage.classList.add('cbr-unlocked');
-                lockOverlay.style.display = 'none';
-                document.getElementById('rewardText').innerHTML = "<span class='text-emerald-400 font-bold'>UTANG LUNAS! Saatnya tabung Rp 3.000.000/bulan untuk motor impian!</span>";
+                unlockReward(false);
             } else {
                 lockReward();
             }
         }
 
         function triggerVictory() {
-            confetti({
-                particleCount: 150,
-                spread: 70,
-                origin: { y: 0.6 },
-                colors: ['#10b981', '#3b82f6', '#f8fafc']
-            });
+            // Efek Confetti Mewah
+            const duration = 3 * 1000;
+            const end = Date.now() + duration;
+
+            (function frame() {
+                confetti({ particleCount: 5, angle: 60, spread: 55, origin: { x: 0 }, colors: ['#10b981', '#3b82f6'] });
+                confetti({ particleCount: 5, angle: 120, spread: 55, origin: { x: 1 }, colors: ['#10b981', '#3b82f6'] });
+Untuk membuat aplikasi pemantauan (*tracker*) ini terlihat **sangat profesional (PRO)** layaknya *dashboard* keuangan asli, saya telah merombak total desain dan fitur kodenya. 
+
+Aplikasi ini sekarang dilengkapi dengan:
+1. **Desain UI/UX Modern:** Menggunakan *Dark Mode*, *glassmorphism*, dan tipografi yang elegan.
+2. **Instruksi Eksekusi Super Jelas:** Di setiap misi, tertulis persis **kapan waktu yang tepat** untuk Anda mencentangnya (contoh: *"Centang pada tanggal 28 Oktober setelah gaji masuk"*).
+3. **Penyimpanan Lokal Otomatis:** Data tidak akan hilang meski *browser* ditutup.
+4. **Misi Spesifik:** Sudah memasukkan misi **"Rp3 Juta untuk Ibu di bulan Desember"**.
+
+---
+
+### TAHAP 1: KODE APLIKASI FULL PRO (index.html)
+
+Silakan **salin semua kode di bawah ini**, lalu simpan dengan nama file yang **HARUS PERSIS** `index.html` (huruf kecil semua, jangan `Index.html` atau `debt.html`).
+
+```html
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debt Snowball Pro | Financial Dashboard</title>
+    <!-- Tailwind CSS -->
+    <script src="[https://cdn.tailwindcss.com](https://cdn.tailwindcss.com)"></script>
+    <!-- Canvas Confetti -->
+    <script src="[https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js](https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js)"></script>
+    <!-- Google Fonts -->
+    <link href="[https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap](https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap)" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #0B1120;
+            background-image: radial-gradient(circle at top right, #1e293b, transparent),
+                              radial-gradient(circle at bottom left, #0f172a, transparent);
+            color: #F8FAFC;
+        }
+        .glass-panel {
+            background: rgba(30, 41, 59, 0.4);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        }
+        .card-hover:hover {
+            transform: translateY(-2px);
+            border-color: rgba(16, 185, 129, 0.3);
+            background: rgba(30, 41, 59, 0.7);
+        }
+        /* Custom Checkbox */
+        .cyber-checkbox input:checked + div {
+            background-color: #10B981;
+            border-color: #10B981;
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.4);
+        }
+        .cyber-checkbox input:checked + div svg { display: block; }
+        
+        /* Reward Image Filters */
+        .cbr-locked { filter: grayscale(100%) brightness(40%); transition: all 1.5s ease; }
+        .cbr-unlocked { filter: grayscale(0%) brightness(100%); transform: scale(1.05); transition: all 1.5s ease; box-shadow: 0 20px 40px rgba(16, 185, 129, 0.2); }
+    </style>
+</head>
+<body class="min-h-screen pb-12">
+
+    <!-- Navbar -->
+    <nav class="glass-panel sticky top-0 z-50 border-b border-slate-800 px-6 py-4">
+        <div class="max-w-5xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-2">
+                <div class="w-8 h-8 rounded bg-gradient-to-br from-emerald-400 to-cyan-500 flex items-center justify-center font-bold text-slate-900">K</div>
+                <span class="font-bold text-lg tracking-tight">Financial<span class="text-emerald-400">Command</span></span>
+            </div>
+            <div class="text-sm font-medium text-slate-400">Tangerang, ID</div>
+        </div>
+    </nav>
+
+    <main class="max-w-5xl mx-auto px-4 mt-8 space-y-8">
+        
+        <!-- Header & Stats Dashboard -->
+        <header class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="md:col-span-2 glass-panel p-6 rounded-2xl flex flex-col justify-center">
+                <h1 class="text-3xl font-extrabold mb-2">Master Plan Eksekusi</h1>
+                <p class="text-slate-400 text-sm leading-relaxed">Pantau pelunasan utang dan pengumpulan kas secara real-time. Disiplin menyisihkan Rp500.000 setiap hari Jumat adalah kunci utama keberhasilan roadmap ini.</p>
+            </div>
+            <div class="glass-panel p-6 rounded-2xl flex flex-col items-center justify-center text-center relative overflow-hidden">
+                <div class="absolute inset-0 bg-gradient-to-b from-emerald-500/10 to-transparent"></div>
+                <p class="text-sm font-semibold text-slate-400 mb-1 relative z-10">Total Progres</p>
+                <div class="text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400 mb-2 relative z-10" id="progressPercent">0%</div>
+                <p class="text-xs text-slate-500 font-medium relative z-10"><span id="lunasCount">0</span> dari 9 Misi Selesai</p>
+            </div>
+        </header>
+
+        <!-- Progress Bar -->
+        <div class="w-full bg-slate-800 rounded-full h-3 overflow-hidden shadow-inner">
+            <div id="progressBar" class="bg-gradient-to-r from-emerald-500 to-cyan-500 h-3 rounded-full transition-all duration-1000 ease-out w-0 shadow-[0_0_10px_rgba(16,185,129,0.5)]"></div>
+        </div>
+
+        <!-- Timeline Section -->
+        <div>
+            <h2 class="text-xl font-bold mb-4 flex items-center gap-2">
+                <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
+                Roadmap Tindakan
+            </h2>
+            <div id="timelineContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                <!-- JavaScript will inject cards here -->
+            </div>
+        </div>
+
+        <!-- Ultimate Reward -->
+        <div class="mt-12 glass-panel rounded-3xl p-8 text-center relative overflow-hidden border border-slate-700">
+            <div class="absolute inset-0 bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 opacity-50"></div>
+            <div class="relative z-10 max-w-2xl mx-auto">
+                <h3 class="text-2xl font-extrabold mb-2 text-transparent bg-clip-text bg-gradient-to-r from-white to-slate-400">Ultimate Target: Honda CBR250RR</h3>
+                <p id="rewardText" class="text-slate-400 text-sm mb-8">Selesaikan 9 misi di atas untuk membuka izin menabung murni Rp4.000.000/bulan.</p>
+                
+                <div class="relative inline-block">
+                    <!-- Placeholder Motorbike Area -->
+                    <div id="cbrImage" class="cbr-locked w-64 h-40 bg-slate-800 rounded-2xl flex items-center justify-center border border-slate-600 shadow-2xl mx-auto">
+                        <span class="text-7xl">🏍️</span>
+                    </div>
+                    <!-- Lock Icon overlay -->
+                    <div id="lockOverlay" class="absolute inset-0 flex items-center justify-center backdrop-blur-[2px] rounded-2xl">
+                        <div class="bg-slate-900 p-4 rounded-full shadow-[0_0_15px_rgba(0,0,0,0.5)] border border-slate-700">
+                            <svg class="w-8 h-8 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        // DATA ROADMAP: Termasuk instruksi spesifik KAPAN harus dicentang
+        const debts = [
+            { id: 1, name: "ShopeePinjam 2 (Lunas)", date: "Okt 2026", amount: "Rp 696.000", instruction: "Centang pada 28 Okt 2026 setelah Anda membayar lunas sisa tagihan ini." },
+            { id: 2, name: "ShopeePinjam 1 (Lunas)", date: "Nov 2026", amount: "Rp 879.000", instruction: "Centang pada 28 Nov 2026 setelah Anda menggunakan tabungan kas untuk melunasinya." },
+            { id: 3, name: "Hadiah Tunai Ibu", date: "Des 2026", amount: "Rp 3.000.000", instruction: "Centang pada pertengahan Des 2026 tepat setelah Anda menyerahkan uang cash ke Ibu." },
+            { id: 4, name: "SeaBank Zulfa 1 (Lunas)", date: "Jan 2027", amount: "Rp 1.568.000", instruction: "Centang pada 28 Jan 2027 setelah dieksekusi dari sisa kas dan gaji." },
+            { id: 5, name: "Adapundi (Lunas)", date: "Feb 2027", amount: "Sisa Saldo", instruction: "Centang saat tagihan bulan Februari dibayar penuh." },
+            { id: 6, name: "ShopeePinjam 3 (Lunas)", date: "Feb 2027", amount: "Sisa Saldo", instruction: "Centang bersamaan dengan pelunasan Adapundi di bulan Februari." },
+            { id: 7, name: "SeaBank Zulfa 2 (Lunas)", date: "Mar 2027", amount: "Sisa Saldo", instruction: "Centang pada gajian Maret setelah sisa pokok SeaBank ini lunas total." },
+            { id: 8, name: "Jago Zulfa 1 (Lunas)", date: "Apr 2027", amount: "Sisa Saldo", instruction: "Centang pada bulan April saat akun Jago pertama resmi nol." },
+            { id: 9, name: "Jago Zulfa 2 & 3 (Lunas)", date: "Mei 2027", amount: "Sisa Terakhir", instruction: "Centang di bulan Mei sebagai penutupan seluruh sejarah utang Anda!" }
+        ];
+
+        const container = document.getElementById('timelineContainer');
+        
+        // Render Cards
+        debts.forEach((debt, index) => {
+            const isChecked = localStorage.getItem(`debt_pro_${debt.id}`) === 'true';
+
+            const card = document.createElement('div');
+            card.className = "glass-panel p-5 rounded-2xl flex flex-col justify-between transition-all duration-300 card-hover cursor-pointer group";
+            card.setAttribute('onclick', `toggleDebt(${debt.id})`);
             
+            card.innerHTML = `
+                <div>
+                    <div class="flex justify-between items-start mb-3">
+                        <span class="text-xs font-bold tracking-wider text-emerald-400 bg-emerald-400/10 px-2.5 py-1 rounded-md uppercase">${debt.date}</span>
+                        <label class="cyber-checkbox relative flex items-center cursor-pointer">
+                            <input type="checkbox" id="checkbox-${debt.id}" class="sr-only" ${isChecked ? 'checked' : ''} onclick="event.stopPropagation(); toggleDebt(${debt.id})">
+                            <div class="w-7 h-7 border-2 border-slate-600 rounded-lg flex items-center justify-center transition-all bg-slate-800 group-hover:border-slate-400">
+                                <svg class="w-4 h-4 text-white hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                            </div>
+                        </label>
+                    </div>
+                    <h3 class="font-bold text-lg text-white mb-1">${debt.name}</h3>
+                    <p class="text-emerald-500 font-semibold text-sm mb-4">${debt.amount}</p>
+                </div>
+                <div class="pt-3 border-t border-slate-700/50 mt-auto">
+                    <p class="text-xs text-slate-400 flex items-start gap-1.5 leading-relaxed">
+                        <svg class="w-4 h-4 text-cyan-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        ${debt.instruction}
+                    </p>
+                </div>
+            `;
+            container.appendChild(card);
+        });
+
+        // Initialize progress
+        updateProgress(false);
+
+        function toggleDebt(id) {
+            const checkbox = document.getElementById(`checkbox-${id}`);
+            checkbox.checked = !checkbox.checked;
+            
+            // Save to LocalStorage
+            localStorage.setItem(`debt_pro_${id}`, checkbox.checked);
+            updateProgress(true);
+        }
+
+        function updateProgress(isInteractive = false) {
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            const checkedCount = Array.from(checkboxes).filter(cb => cb.checked).length;
+            const total = debts.length;
+            const percentage = Math.round((checkedCount / total) * 100);
+
+            // Update UI
+            document.getElementById('lunasCount').innerText = checkedCount;
+            document.getElementById('progressPercent').innerText = `${percentage}%`;
+            document.getElementById('progressBar').style.width = `${percentage}%`;
+
+            if (checkedCount === total) {
+                if (isInteractive) triggerVictory();
+                unlockReward();
+            } else {
+                lockReward();
+            }
+        }
+
+        function triggerVictory() {
+            const end = Date.now() + (3 * 1000);
+            const colors = ['#10B981', '#06B6D4', '#F8FAFC'];
+
+            (function frame() {
+                confetti({ particleCount: 5, angle: 60, spread: 55, origin: { x: 0 }, colors: colors });
+                confetti({ particleCount: 5, angle: 120, spread: 55, origin: { x: 1 }, colors: colors });
+                if (Date.now() < end) requestAnimationFrame(frame);
+            }());
+        }
+
+        function unlockReward() {
             const cbrImage = document.getElementById('cbrImage');
             const lockOverlay = document.getElementById('lockOverlay');
-            cbrImage.classList.remove('cbr-locked');
-            cbrImage.classList.add('cbr-unlocked');
-            lockOverlay.style.display = 'none';
-            document.getElementById('rewardText').innerHTML = "<span class='text-emerald-400 font-bold'>UTANG LUNAS! Saatnya tabung Rp 3.000.000/bulan untuk motor impian!</span>";
+            cbrImage.classList.replace('cbr-locked', 'cbr-unlocked');
+            lockOverlay.style.opacity = '0';
+            setTimeout(() => lockOverlay.style.display = 'none', 300);
+            document.getElementById('rewardText').innerHTML = "<span class='text-emerald-400 font-bold text-base'>🎉 BEBAS UTANG! Fase mengumpulkan cash Rp 35 Juta dimulai! 🎉</span>";
         }
 
         function lockReward() {
             const cbrImage = document.getElementById('cbrImage');
             const lockOverlay = document.getElementById('lockOverlay');
-            cbrImage.classList.add('cbr-locked');
-            cbrImage.classList.remove('cbr-unlocked');
+            cbrImage.classList.replace('cbr-unlocked', 'cbr-locked');
             lockOverlay.style.display = 'flex';
-            document.getElementById('rewardText').innerText = "Selesaikan 9 misi pelunasan di atas untuk membuka akses menabung unit ini.";
+            lockOverlay.style.opacity = '1';
+            document.getElementById('rewardText').innerText = "Selesaikan 9 misi di atas untuk membuka izin menabung murni Rp4.000.000/bulan.";
         }
     </script>
 </body>
