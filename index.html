@@ -70,7 +70,6 @@
     </div>
 
     <script>
-        // Data Roadmap Pelunasan
         const debts = [
             { id: 1, name: "ShopeePinjam 2", date: "Oktober 2026", amount: "Rp 696.000" },
             { id: 2, name: "ShopeePinjam 1", date: "November 2026", amount: "Rp 879.000" },
@@ -83,21 +82,22 @@
             { id: 9, name: "Jago Zulfa 3", date: "Mei 2027", amount: "Rp 2.831.485" }
         ];
 
-        let checkedCount = 0;
-
-        // Render Cards
         const container = document.getElementById('timelineContainer');
+        
+        // Render Cards & Load LocalStorage
         debts.forEach((debt, index) => {
+            const isChecked = localStorage.getItem(`debt_${debt.id}`) === 'true';
+
             const card = document.createElement('div');
             card.className = "glass-card p-5 rounded-xl flex items-start gap-4 transition-all hover:bg-slate-800 cursor-pointer";
-            card.setAttribute('onclick', `toggleDebt('checkbox-${debt.id}')`);
+            card.setAttribute('onclick', `toggleDebt(${debt.id})`);
             
             card.innerHTML = `
                 <div class="pt-1">
                     <label class="relative flex items-center cursor-pointer">
-                        <input type="checkbox" id="checkbox-${debt.id}" class="checkbox-custom sr-only" onchange="updateProgress()">
-                        <div class="w-6 h-6 border-2 border-slate-500 rounded flex items-center justify-center transition-colors">
-                            <svg class="w-4 h-4 text-white hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <input type="checkbox" id="checkbox-${debt.id}" class="checkbox-custom sr-only" ${isChecked ? 'checked' : ''} onclick="event.stopPropagation(); toggleDebt(${debt.id})">
+                        <div class="w-6 h-6 border-2 border-slate-500 rounded flex items-center justify-center transition-colors ${isChecked ? 'bg-emerald-500 border-emerald-500' : ''}">
+                            <svg class="w-4 h-4 text-white ${isChecked ? 'block' : 'hidden'}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
                             </svg>
                         </div>
@@ -115,33 +115,51 @@
             container.appendChild(card);
         });
 
-        // Update Progress Logic
+        updateProgress(false);
+
         function toggleDebt(id) {
-            const checkbox = document.getElementById(id);
+            const checkbox = document.getElementById(`checkbox-${id}`);
             checkbox.checked = !checkbox.checked;
-            updateProgress();
+            
+            localStorage.setItem(`debt_${id}`, checkbox.checked);
+            
+            const boxDiv = checkbox.nextElementSibling;
+            const svgIcon = boxDiv.querySelector('svg');
+            if (checkbox.checked) {
+                boxDiv.classList.add('bg-emerald-500', 'border-emerald-500');
+                svgIcon.classList.remove('hidden');
+            } else {
+                boxDiv.classList.remove('bg-emerald-500', 'border-emerald-500');
+                svgIcon.classList.add('hidden');
+            }
+
+            updateProgress(true);
         }
 
-        function updateProgress() {
+        function updateProgress(isInteractive = false) {
             const checkboxes = document.querySelectorAll('.checkbox-custom');
-            checkedCount = Array.from(checkboxes).filter(cb => cb.checked).length;
+            const checkedCount = Array.from(checkboxes).filter(cb => cb.checked).length;
             const total = debts.length;
             const percentage = Math.round((checkedCount / total) * 100);
 
-            // Update UI Stats
             document.getElementById('lunasCount').innerText = checkedCount;
             document.getElementById('progressPercent').innerText = `${percentage}%`;
             document.getElementById('progressBar').style.width = `${percentage}%`;
 
-            // Check if all clear (100%)
-            if (checkedCount === total) {
+            if (checkedCount === total && isInteractive) {
                 triggerVictory();
+            } else if (checkedCount === total) {
+                const cbrImage = document.getElementById('cbrImage');
+                const lockOverlay = document.getElementById('lockOverlay');
+                cbrImage.classList.remove('cbr-locked');
+                cbrImage.classList.add('cbr-unlocked');
+                lockOverlay.style.display = 'none';
+                document.getElementById('rewardText').innerHTML = "<span class='text-emerald-400 font-bold'>UTANG LUNAS! Saatnya tabung Rp 3.000.000/bulan untuk motor impian!</span>";
             } else {
                 lockReward();
             }
         }
 
-        // Victory State
         function triggerVictory() {
             confetti({
                 particleCount: 150,
@@ -150,10 +168,8 @@
                 colors: ['#10b981', '#3b82f6', '#f8fafc']
             });
             
-            // Unlock CBR250RR
             const cbrImage = document.getElementById('cbrImage');
             const lockOverlay = document.getElementById('lockOverlay');
-            
             cbrImage.classList.remove('cbr-locked');
             cbrImage.classList.add('cbr-unlocked');
             lockOverlay.style.display = 'none';
@@ -163,7 +179,6 @@
         function lockReward() {
             const cbrImage = document.getElementById('cbrImage');
             const lockOverlay = document.getElementById('lockOverlay');
-            
             cbrImage.classList.add('cbr-locked');
             cbrImage.classList.remove('cbr-unlocked');
             lockOverlay.style.display = 'flex';
